@@ -71,32 +71,49 @@ export function Navbar() {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: '100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed inset-0 z-[1000] bg-white md:hidden"
+            className="fixed inset-0 z-[1000] bg-white md:hidden flex flex-col"
           >
-            <nav className="flex flex-col items-center gap-2 px-6 pt-24 pb-12 h-full overflow-y-auto">
-              {navItems.map((item, i) => (
-                <motion.div
-                  key={item.href}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.05 }}
-                  className="w-full"
-                >
-                  <Link
-                    href={item.href}
-                    onClick={() => setMobileOpen(false)}
-                    className="block w-full text-center rounded-xl px-4 py-4 text-xl font-bold text-slate-900 border border-transparent hover:border-slate-100 hover:bg-slate-50 transition-all"
+            {/* Mobile Header (Repeat identity for context) */}
+            <div className="flex items-center justify-between px-4 py-4 border-b border-slate-100 bg-white">
+              <div className="flex items-center gap-2">
+                <div className="flex bg-blue-600 rounded-full p-1 overflow-hidden shrink-0">
+                  <img src="/images/logo.png" alt="Logo" className="w-8 h-8 rounded-full bg-white object-contain" />
+                </div>
+                <span className="font-heading text-lg font-bold text-slate-900">Reddy Consultancy</span>
+              </div>
+              <button 
+                onClick={() => setMobileOpen(false)} 
+                className="p-2 rounded-lg text-slate-600 bg-slate-50 hover:bg-slate-100 transition-colors"
+              >
+                <X size={24} />
+              </button>
+            </div>
+
+            <nav className="flex-1 overflow-y-auto px-6 py-8 bg-white">
+              <div className="flex flex-col gap-1">
+                {navItems.map((item, i) => (
+                  <motion.div
+                    key={item.href}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: i * 0.05 }}
                   >
-                    {item.label}
-                  </Link>
-                </motion.div>
-              ))}
+                    <Link
+                      href={item.href}
+                      onClick={() => setMobileOpen(false)}
+                      className="block w-full rounded-xl px-4 py-4 text-xl font-bold text-slate-900 hover:bg-slate-50 active:bg-slate-100 transition-all border border-transparent active:border-slate-200"
+                    >
+                      {item.label}
+                    </Link>
+                  </motion.div>
+                ))}
+              </div>
               
               <motion.div 
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
-                className="w-full mt-auto space-y-4"
+                className="mt-8 space-y-4"
               >
                 <Link href="/contact" onClick={() => setMobileOpen(false)} className="block w-full text-center rounded-2xl border-2 border-slate-200 bg-white px-6 py-4 font-bold text-slate-900">
                   Apply Now
