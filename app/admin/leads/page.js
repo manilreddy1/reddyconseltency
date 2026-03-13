@@ -95,9 +95,10 @@ export default function LeadsPage() {
         </button>
       </div>
 
-      {/* Leads Table */}
+      {/* Leads List */}
       <div className="rounded-2xl bg-white border border-slate-100 overflow-hidden shadow-sm">
-        <div className="overflow-x-auto">
+        {/* Desktop Table View */}
+        <div className="hidden sm:block overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr className="bg-slate-50 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
@@ -105,7 +106,7 @@ export default function LeadsPage() {
                 <th className="px-6 py-3">Course / Location</th>
                 <th className="px-6 py-3">Date</th>
                 <th className="px-6 py-3">Status</th>
-                <th className="px-6 py-3">Actions</th>
+                <th className="px-6 py-3 text-right">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -137,8 +138,8 @@ export default function LeadsPage() {
                     <td className="px-6 py-4">
                       <span className={`rounded-full px-3 py-1 text-xs font-semibold ${statusColors[lead.status] || "bg-slate-100"}`}>{lead.status}</span>
                     </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-2">
+                    <td className="px-6 py-4 text-right">
+                      <div className="flex items-center justify-end gap-2">
                         <select
                           value={lead.status}
                           onChange={(e) => updateStatus(lead.id, e.target.value)}
@@ -164,6 +165,69 @@ export default function LeadsPage() {
               )}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile Card View */}
+        <div className="sm:hidden divide-y divide-slate-50">
+          {filtered.length === 0 ? (
+            <div className="px-6 py-10 text-center text-slate-500 italic text-sm">No leads found.</div>
+          ) : (
+            filtered.map((lead, i) => (
+              <motion.div
+                key={lead.id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.05 }}
+                className="p-4 space-y-4"
+              >
+                <div className="flex items-start justify-between">
+                  <div>
+                    <h3 className="font-bold text-slate-900">{lead.name}</h3>
+                    <p className="text-xs text-slate-500">{lead.email}</p>
+                    <p className="text-xs text-slate-500">{lead.phone}</p>
+                  </div>
+                  <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider ${statusColors[lead.status] || "bg-slate-100"}`}>
+                    {lead.status}
+                  </span>
+                </div>
+
+                <div className="rounded-xl bg-slate-50 p-3 space-y-2">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-slate-400">Course</span>
+                    <span className="font-semibold text-slate-700">{lead.courseInterested}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-slate-400">Location</span>
+                    <span className="font-semibold text-slate-700">{lead.preferredLocation || "N/A"}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-slate-400">Date</span>
+                    <span className="text-slate-500">{lead.date}</span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 pt-2">
+                  <select
+                    value={lead.status}
+                    onChange={(e) => updateStatus(lead.id, e.target.value)}
+                    className="flex-1 rounded-xl border border-slate-200 px-3 py-2 text-sm outline-none bg-white"
+                  >
+                    <option value="New">New</option>
+                    <option value="Contacted">Contacted</option>
+                    <option value="Interested">Interested</option>
+                    <option value="Converted">Converted</option>
+                    <option value="Closed">Closed</option>
+                  </select>
+                  <button 
+                    onClick={() => handleDelete(lead.id)}
+                    className="p-3 rounded-xl border border-red-100 text-red-500 hover:bg-red-50 transition-colors"
+                  >
+                    <Trash2 size={18} />
+                  </button>
+                </div>
+              </motion.div>
+            ))
+          )}
         </div>
       </div>
     </div>

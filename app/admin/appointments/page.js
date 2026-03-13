@@ -99,7 +99,8 @@ export default function AppointmentsManagement() {
       </motion.div>
 
       <div className="rounded-2xl bg-white border border-slate-100 overflow-hidden shadow-sm">
-        <div className="overflow-x-auto">
+        {/* Desktop Table View */}
+        <div className="hidden sm:block overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr className="bg-slate-50 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
@@ -108,7 +109,7 @@ export default function AppointmentsManagement() {
                 <th className="px-6 py-3">Date</th>
                 <th className="px-6 py-3">Time</th>
                 <th className="px-6 py-3">Status</th>
-                <th className="px-6 py-3">Actions</th>
+                <th className="px-6 py-3 text-right">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -135,8 +136,8 @@ export default function AppointmentsManagement() {
                         <option value="Cancelled">Cancelled</option>
                       </select>
                     </td>
-                    <td className="px-6 py-4">
-                      <button onClick={() => handleDelete(apt.id)} className="text-slate-400 hover:text-red-500 transition-colors">
+                    <td className="px-6 py-4 text-right">
+                      <button onClick={() => handleDelete(apt.id)} className="p-1.5 text-slate-400 hover:text-red-500 transition-colors">
                         <Trash2 size={16} />
                       </button>
                     </td>
@@ -145,6 +146,64 @@ export default function AppointmentsManagement() {
               )}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile Card View */}
+        <div className="sm:hidden divide-y divide-slate-50">
+          {appointments.length === 0 ? (
+            <div className="px-6 py-10 text-center text-slate-500 italic text-sm">No appointments scheduled.</div>
+          ) : (
+            appointments.map((apt, i) => (
+              <motion.div
+                key={apt.id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.05 }}
+                className="p-4 space-y-4"
+              >
+                <div className="flex items-start justify-between">
+                  <div>
+                    <h3 className="font-bold text-slate-900">{apt.student}</h3>
+                    <p className="text-xs text-slate-500 flex items-center gap-1 mt-1"><User size={12} /> {apt.counselor}</p>
+                  </div>
+                  <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
+                    apt.status === "Confirmed" ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"
+                  }`}>
+                    {apt.status}
+                  </span>
+                </div>
+
+                <div className="flex gap-4">
+                  <div className="flex-1 rounded-xl bg-slate-50 p-2.5 flex items-center gap-2">
+                    <Calendar size={14} className="text-primary" />
+                    <span className="text-xs font-medium text-slate-600 uppercase">{apt.date}</span>
+                  </div>
+                  <div className="flex-1 rounded-xl bg-slate-50 p-2.5 flex items-center gap-2">
+                    <Clock size={14} className="text-primary" />
+                    <span className="text-xs font-medium text-slate-600 uppercase">{apt.time}</span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 pt-2">
+                  <select
+                    value={apt.status}
+                    onChange={e => updateStatus(apt.id, e.target.value)}
+                    className="flex-1 rounded-xl border border-slate-200 px-3 py-2 text-sm outline-none bg-white"
+                  >
+                    <option value="Pending">Pending</option>
+                    <option value="Confirmed">Confirmed</option>
+                    <option value="Cancelled">Cancelled</option>
+                  </select>
+                  <button 
+                    onClick={() => handleDelete(apt.id)}
+                    className="p-3 rounded-xl border border-red-100 text-red-500 hover:bg-red-50 transition-colors"
+                  >
+                    <Trash2 size={18} />
+                  </button>
+                </div>
+              </motion.div>
+            ))
+          )}
         </div>
       </div>
     </div>

@@ -174,7 +174,7 @@ export default function HomePage() {
 
       {/* Stats */}
       <section className="-mt-10 pb-16 relative z-10">
-        <div className="mx-auto grid max-w-7xl gap-4 px-4 md:grid-cols-4">
+        <div className="mx-auto grid max-w-7xl gap-4 px-4 grid-cols-2 md:grid-cols-4">
           {stats.map((item, i) => (
             <motion.div
               key={item.label}
@@ -194,9 +194,9 @@ export default function HomePage() {
       {/* Services */}
       <section className="bg-slate-950 py-24 text-white">
         <div className="mx-auto max-w-7xl px-4">
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-16">
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-16 px-4">
             <p className="text-sm font-semibold uppercase tracking-[0.3em] text-secondary">Services</p>
-            <h2 className="mt-4 font-heading text-4xl font-bold">Complete Admission Workflow</h2>
+            <h2 className="mt-4 font-heading text-3xl sm:text-4xl font-bold">Complete Admission Workflow</h2>
           </motion.div>
           <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
             {services.map((item, i) => (
@@ -226,9 +226,9 @@ export default function HomePage() {
             <p className="text-sm font-semibold uppercase tracking-[0.3em] text-secondary">Courses and Colleges</p>
           </motion.div>
           <div className="grid gap-6 lg:grid-cols-2">
-            <div className="rounded-3xl border border-white/10 bg-white/5 p-8">
-              <h3 className="font-heading text-2xl font-bold mb-6">Popular Courses</h3>
-              <div className="grid gap-4 md:grid-cols-2">
+            <div className="rounded-3xl border border-white/10 bg-white/5 p-6 sm:p-8">
+              <h3 className="font-heading text-xl sm:text-2xl font-bold mb-6">Popular Courses</h3>
+              <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
                 {courses.map((item) => (
                   <Link key={item.slug} href={`/courses/${item.slug}`} className="group rounded-2xl border border-white/10 p-4 hover:bg-white/5 transition-colors">
                     <h4 className="font-heading text-lg font-semibold group-hover:text-secondary transition-colors">{item.name}</h4>
@@ -237,8 +237,8 @@ export default function HomePage() {
                 ))}
               </div>
             </div>
-            <div className="rounded-3xl border border-white/10 bg-white/5 p-8">
-              <h3 className="font-heading text-2xl font-bold mb-6">Partner Colleges</h3>
+            <div className="rounded-3xl border border-white/10 bg-white/5 p-6 sm:p-8">
+              <h3 className="font-heading text-xl sm:text-2xl font-bold mb-6">Partner Colleges</h3>
               {colleges.map((item) => (
                 <Link key={item.slug} href={`/colleges/${item.slug}`} className="group mb-4 block rounded-2xl border border-white/10 p-4 hover:bg-white/5 transition-colors">
                   <h4 className="font-heading text-lg font-semibold group-hover:text-secondary transition-colors">{item.name}</h4>
