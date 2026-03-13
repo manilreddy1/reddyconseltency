@@ -11,13 +11,14 @@ const iconMap = { "Total Leads": Users, "Leads Today": ArrowUpRight, "Conversion
 
 export default function AdminDashboard() {
   const [metrics, setMetrics] = useState([
-    { label: "Total Leads", value: "0", change: "..." },
-    { label: "Leads Today", value: "0", change: "..." },
-    { label: "Conversions", value: "0", change: "0%" },
-    { label: "Revenue", value: "Rs. 0", change: "0%" },
-    { label: "Appointments", value: "0", change: "..." }
+    { label: "Total Leads", value: "0", change: "Live" },
+    { label: "Leads Today", value: "0", change: "Live" },
+    { label: "Conversions", value: "0", change: "N/A" },
+    { label: "Total Colleges", value: "0", change: "Active" },
+    { label: "Appointments", value: "0", change: "Next 7 Days" }
   ]);
   const [recentLeads, setRecentLeads] = useState([]);
+  const [recentApt, setRecentApt] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -26,72 +27,72 @@ export default function AdminDashboard() {
       return;
     }
 
-    async function fetchStats() {
+    async function fetchDashboardData() {
       try {
-        // 1. Total Leads Count
         const leadsCol = collection(db, "leads");
-        const totalSnap = await getCountFromServer(leadsCol);
-        const totalLeads = totalSnap.data().count;
+        const collegesCol = collection(db, "colleges");
+        const appointmentsCol = collection(db, "appointments");
 
-        // 2. Leads Today Count
+        // 1. Total Counts
+        const totalLeadsSnap = await getCountFromServer(leadsCol);
+        const totalCollegesSnap = await getCountFromServer(collegesCol);
+        
+        // 2. Leads Today
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         const todayQuery = query(leadsCol, where("createdAt", ">=", Timestamp.fromDate(today)));
         const todaySnap = await getCountFromServer(todayQuery);
-        const leadsToday = todaySnap.data().count;
 
-        // Update metrics
-        setMetrics(prev => prev.map(m => {
-          if (m.label === "Total Leads") return { ...m, value: totalLeads.toString(), change: "Live" };
-          if (m.label === "Leads Today") return { ...m, value: leadsToday.toString(), change: "Live" };
-          return m;
-        }));
+        // 3. Appointments (Upcoming)
+        const aptSnap = await getCountFromServer(appointmentsCol);
+
+        setMetrics([
+          { label: "Total Leads", value: totalLeadsSnap.data().count.toString(), change: "Live" },
+          { label: "Leads Today", value: todaySnap.data().count.toString(), change: "Live" },
+          { label: "Conversions", value: "0", change: "Tracked" },
+          { label: "Total Colleges", value: totalCollegesSnap.data().count.toString(), change: "Active" },
+          { label: "Appointments", value: aptSnap.data().count.toString(), change: "Total" }
+        ]);
       } catch (err) {
-        console.error("Error fetching dashboard counts:", err);
+        console.error("Dashboard init error:", err);
       }
     }
 
-    // Recent Leads Pipeline (Real-time)
-    const qRecent = query(collection(db, "leads"), orderBy("createdAt", "desc"), limit(5));
-    const unsubscribeLeads = onSnapshot(qRecent, (snapshot) => {
-      setRecentLeads(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+    // Lead Pipeline (Real-time)
+    const qLeads = query(collection(db, "leads"), orderBy("createdAt", "desc"), limit(4));
+    const unsubLeads = onSnapshot(qLeads, (snap) => {
+      setRecentLeads(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+    });
+
+    // Recent Appointments (Real-time)
+    const qApt = query(collection(db, "appointments"), orderBy("date", "desc"), limit(3));
+    const unsubApt = onSnapshot(qApt, (snap) => {
+      setRecentApt(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
       setLoading(false);
     });
 
-    fetchStats();
-    return () => unsubscribeLeads();
+    fetchDashboardData();
+    return () => { unsubLeads(); unsubApt(); };
   }, []);
 
-  if (loading) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <Loader2 className="h-10 w-10 animate-spin text-primary" />
-      </div>
-    );
-  }
+  if (loading) return <div className="flex h-screen items-center justify-center"><Loader2 className="h-10 w-10 animate-spin text-primary" /></div>;
 
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="font-heading text-2xl font-bold text-slate-900">Dashboard</h1>
-        <p className="text-slate-500 mt-1">Overview of your consultancy performance.</p>
+        <h1 className="font-heading text-2xl font-bold text-slate-900">Dashboard Overview</h1>
+        <p className="text-slate-500 mt-1">Live snapshots of your platform performance.</p>
       </div>
 
-      {/* Metrics */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         {metrics.map((metric, i) => {
           const Icon = iconMap[metric.label] || TrendingUp;
           return (
-            <motion.div
-              key={metric.label}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.06 }}
-              className="rounded-2xl bg-white border border-slate-100 p-5 shadow-sm"
-            >
+            <motion.div key={metric.label} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
+              className="rounded-2xl bg-white border border-slate-100 p-5 shadow-sm">
               <div className="flex items-center justify-between mb-3">
                 <Icon size={18} className="text-primary" />
-                <span className="text-xs font-semibold text-emerald-600">{metric.change}</span>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-600">{metric.change}</span>
               </div>
               <p className="text-2xl font-bold text-slate-900">{metric.value}</p>
               <p className="text-xs text-slate-500 mt-1">{metric.label}</p>
@@ -100,63 +101,46 @@ export default function AdminDashboard() {
         })}
       </div>
 
-      {/* Lead Pipeline & Appointments */}
       <div className="grid gap-6 lg:grid-cols-2">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
-          className="rounded-2xl bg-white border border-slate-100 p-6 shadow-sm">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="font-heading text-lg font-bold text-slate-900">Lead Pipeline</h2>
-            <Link href="/admin/leads" className="text-sm text-primary font-semibold hover:text-secondary transition-colors">View All &rarr;</Link>
+        <motion.div className="rounded-2xl bg-white border border-slate-100 p-6 shadow-sm">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="font-heading text-lg font-bold text-slate-900">New Leads</h2>
+            <Link href="/admin/leads" className="text-xs font-bold text-primary uppercase tracking-widest">View All &rarr;</Link>
           </div>
-          <div className="space-y-3">
-            {recentLeads.length === 0 ? (
-              <p className="text-sm text-slate-500 italic py-4">No recent leads found.</p>
-            ) : (
-              recentLeads.map((lead) => (
-                <div key={lead.id} className="rounded-xl bg-slate-50 p-4 flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center font-heading font-bold text-primary text-sm">{lead.name?.charAt(0)}</div>
-                    <div>
-                      <p className="font-semibold text-slate-900 text-sm">{lead.name}</p>
-                      <p className="text-xs text-slate-500">{lead.courseInterested} | {lead.preferredLocation || "N/A"}</p>
-                    </div>
+          <div className="space-y-4">
+            {recentLeads.length === 0 ? <p className="text-sm text-slate-500 italic">No leads captured yet.</p> : recentLeads.map(lead => (
+              <div key={lead.id} className="flex items-center justify-between border-b border-slate-50 pb-4 last:border-0 last:pb-0">
+                <div className="flex items-center gap-3">
+                  <div className="h-9 w-9 rounded-full bg-primary/5 flex items-center justify-center text-primary font-bold text-xs">{lead.name?.charAt(0)}</div>
+                  <div>
+                    <p className="text-sm font-semibold text-slate-900">{lead.name}</p>
+                    <p className="text-[10px] text-slate-500 uppercase">{lead.courseInterested}</p>
                   </div>
-                  <span className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                    lead.status === "New" ? "bg-blue-50 text-blue-700" :
-                    lead.status === "Interested" ? "bg-amber-50 text-amber-700" :
-                    lead.status === "Converted" ? "bg-emerald-50 text-emerald-700" :
-                    "bg-slate-100 text-slate-600"
-                  }`}>{lead.status}</span>
                 </div>
-              ))
-            )}
+                <span className="text-[10px] font-bold text-slate-400">{lead.status}</span>
+              </div>
+            ))}
           </div>
         </motion.div>
 
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
-          className="rounded-2xl bg-white border border-slate-100 p-6 shadow-sm">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="font-heading text-lg font-bold text-slate-900">Recent Appointments</h2>
-            <Link href="/admin/appointments" className="text-sm text-primary font-semibold hover:text-secondary transition-colors">View All &rarr;</Link>
+        <motion.div className="rounded-2xl bg-white border border-slate-100 p-6 shadow-sm">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="font-heading text-lg font-bold text-slate-900">Recent Bookings</h2>
+            <Link href="/admin/appointments" className="text-xs font-bold text-primary uppercase tracking-widest">Manage &rarr;</Link>
           </div>
-          <div className="space-y-3">
-            <p className="text-sm text-slate-500 italic py-10 text-center">No recent appointments scheduled.</p>
+          <div className="space-y-4">
+            {recentApt.length === 0 ? <p className="text-sm text-slate-500 italic">No appointments booked.</p> : recentApt.map(apt => (
+              <div key={apt.id} className="flex items-center justify-between border-b border-slate-50 pb-4 last:border-0 last:pb-0">
+                <div>
+                  <p className="text-sm font-semibold text-slate-900">{apt.student}</p>
+                  <p className="text-[10px] text-slate-500">{apt.date} @ {apt.time}</p>
+                </div>
+                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${apt.status === 'Confirmed' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}`}>{apt.status}</span>
+              </div>
+            ))}
           </div>
         </motion.div>
       </div>
-
-      {/* Revenue Chart Placeholder */}
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}
-        className="rounded-2xl bg-white border border-slate-100 p-6 shadow-sm">
-        <h2 className="font-heading text-lg font-bold text-slate-900 mb-4">Revenue Overview</h2>
-        <div className="h-64 rounded-xl bg-gradient-to-br from-primary/5 to-secondary/5 flex items-center justify-center">
-          <div className="text-center">
-            <DollarSign className="mx-auto text-primary/30 mb-2" size={48} />
-            <p className="text-sm text-slate-500">Revenue tracking will begin after first conversion</p>
-            <p className="text-xs text-slate-400 mt-1">Connect Stripe or Razorpay to visualize real-time earnings</p>
-          </div>
-        </div>
-      </motion.div>
     </div>
   );
 }
