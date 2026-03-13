@@ -1,0 +1,151 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  passwordHash  String?
+  role          String    @default("STUDENT")
+
+  accounts      Account[]
+  sessions      Session[]
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Account {
+  id                 String  @id @default(cuid())
+  userId             String
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String?
+  access_token       String?
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String?
+  session_state      String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Lead {
+  id                String     @id @default(cuid())
+  name              String
+  phone             String
+  email             String
+  courseInterested  String
+  preferredLocation String?
+  message           String?
+  status            String     @default("NEW")
+  createdAt         DateTime   @default(now())
+}
+
+model College {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  location    String
+  country     String
+  description String
+  logo        String?
+  website     String?
+  ranking     Int?
+}
+
+model Course {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  duration    String
+  eligibility String
+  description String
+}
+
+model Appointment {
+  id           String   @id @default(cuid())
+  studentName  String
+  counselor    String?
+  startsAt     DateTime
+  status       String   @default("Pending")
+  notes        String?
+}
+
+model Application {
+  id          String   @id @default(cuid())
+  student     String
+  college     String
+  course      String
+  status      String   @default("Under Review")
+  progress    Int      @default(0)
+}
+
+model Payment {
+  id          String   @id @default(cuid())
+  student     String
+  package     String
+  amount      Int
+  provider    String
+  status      String
+  createdAt   DateTime @default(now())
+}
+
+model Testimonial {
+  id          String   @id @default(cuid())
+  studentName String
+  course      String
+  college     String
+  review      String
+  rating      Int
+}
+
+model Blog {
+  id               String   @id @default(cuid())
+  slug             String   @unique
+  title            String
+  content          String
+  category         String
+  tags             String?
+  featuredImage    String?
+  seoTitle         String
+  seoDescription   String
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model Message {
+  id         String   @id @default(cuid())
+  senderId   String
+  receiverId String
+  content    String
+  createdAt  DateTime @default(now())
+}

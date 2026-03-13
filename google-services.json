@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "391071915255",
+    "project_id": "reddy-consultancy",
+    "storage_bucket": "reddy-consultancy.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:391071915255:android:76dc1926d0daecb604c7f2",
+        "android_client_info": {
+          "package_name": "ReddyConsultancy.com"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD5x9wEGtVew4AGSZ08ux5H3YnJt6d6BdY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
