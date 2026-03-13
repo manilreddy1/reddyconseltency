@@ -58,25 +58,19 @@ export function Navbar() {
         <div className="hidden md:flex items-center gap-3">
           <Link
             href="/contact"
-            className="px-5 py-2 rounded-full border border-slate-300 text-sm font-semibold hover:bg-slate-100 transition"
+            className="px-5 py-2 rounded-full border border-slate-300 text-sm font-semibold hover:bg-slate-100 transition text-black"
           >
             Apply Now
           </Link>
 
-          <Link
-            href="/login"
-            className="px-5 py-2 rounded-full bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 transition"
-          >
-            Dashboard
-          </Link>
         </div>
 
         {/* Mobile Menu Button */}
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
-          className="md:hidden p-2 rounded-lg hover:bg-slate-100"
+          className="md:hidden p-2 rounded-lg hover:bg-slate-100 "
         >
-          {mobileOpen ? <X size={26} /> : <Menu size={26} />}
+          {mobileOpen ? <X size={26} /> : <Menu size={26} className="text-black"/>}
         </button>
       </div>
 
@@ -88,12 +82,12 @@ export function Navbar() {
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ duration: 0.3 }}
-            className="fixed inset-0 bg-white z-40 md:hidden flex flex-col"
+            className="fixed inset-0 bg-white z-40 md:hidden flex flex-col text-black"
           >
 
             {/* Mobile Header */}
             <div className="flex items-center justify-between px-4 py-4 border-b">
-              <span className="font-bold text-lg">Menu</span>
+              <span className="font-bold text-lg text-black">Menu</span>
 
               <button
                 onClick={() => setMobileOpen(false)}
@@ -104,7 +98,7 @@ export function Navbar() {
             </div>
 
             {/* Mobile Links */}
-            <nav className="flex flex-col px-6 py-6 space-y-2 text-lg font-semibold">
+            <nav className="flex flex-col px-6 py-6 space-y-2 text-lg font-semibold text-black bg-white">
 
               {navItems.map((item) => (
                 <Link
@@ -123,18 +117,11 @@ export function Navbar() {
                 <Link
                   href="/contact"
                   onClick={() => setMobileOpen(false)}
-                  className="text-center py-3 rounded-xl border border-slate-300 font-semibold"
+                  className="text-center py-3 rounded-xl border border-slate-300 font-semibold "
                 >
                   Apply Now
                 </Link>
 
-                <Link
-                  href="/login"
-                  onClick={() => setMobileOpen(false)}
-                  className="text-center py-3 rounded-xl bg-blue-600 text-white font-semibold"
-                >
-                  Admin Login
-                </Link>
 
               </div>
             </nav>
