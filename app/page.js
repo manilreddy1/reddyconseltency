@@ -66,10 +66,9 @@ export default function HomePage() {
 
   return (
     <main className="min-h-screen">
+      <Navbar />
       {/* Hero Section - Human/Photo Centric */}
       <section className="relative bg-white pt-28 pb-20 lg:pt-36 lg:pb-28 overflow-hidden">
-        <Navbar />
-
         <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6">
           <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-8">
             

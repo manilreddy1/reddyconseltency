@@ -42,8 +42,8 @@ export default function AboutPage() {
 
   return (
     <main className="min-h-screen bg-slate-50">
+      <Navbar />
       <div className="bg-primary pb-20 pt-32">
-        <Navbar />
         <div className="mx-auto max-w-7xl px-4 text-center">
           <motion.h1 
             initial={{ opacity: 0, y: 20 }}

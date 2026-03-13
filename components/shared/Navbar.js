@@ -27,7 +27,7 @@ export function Navbar() {
   }, [mobileOpen]);
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-[60] bg-white/90 backdrop-blur-md border-b border-slate-200">
+    <header className="fixed top-0 left-0 right-0 z-[999] bg-white/90 backdrop-blur-md border-b border-slate-200">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:py-4">
         <Link href="/" className="flex items-center gap-2">
           <div className="flex bg-blue-600 rounded-full p-1 overflow-hidden shrink-0">
@@ -71,7 +71,7 @@ export function Navbar() {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: '100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed inset-0 z-[65] bg-white md:hidden"
+            className="fixed inset-0 z-[1000] bg-white md:hidden"
           >
             <nav className="flex flex-col items-center gap-2 px-6 pt-24 pb-12 h-full overflow-y-auto">
               {navItems.map((item, i) => (
