@@ -1,16 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Search, Filter, Download, ChevronDown } from "lucide-react";
-
-const initialLeads = [
-  { id: "1", name: "Kiran Reddy", email: "kiran@email.com", phone: "+91 98765 00001", course: "B.Tech CSE", location: "Hyderabad", status: "New", date: "13 Mar 2026" },
-  { id: "2", name: "Sneha Rao", email: "sneha@email.com", phone: "+91 98765 00002", course: "B.Tech ECE", location: "Warangal", status: "Interested", date: "12 Mar 2026" },
-  { id: "3", name: "Vamshi Kumar", email: "vamshi@email.com", phone: "+91 98765 00003", course: "B.Tech Mechanical", location: "Karimnagar", status: "Converted", date: "11 Mar 2026" },
-  { id: "4", name: "Lavanya Devi", email: "lavanya@email.com", phone: "+91 98765 00004", course: "B.Tech EEE", location: "Nizamabad", status: "Contacted", date: "10 Mar 2026" },
-  { id: "5", name: "Rajesh Goud", email: "rajesh@email.com", phone: "+91 98765 00005", course: "B.Tech IT", location: "Khammam", status: "New", date: "10 Mar 2026" },
-];
+import { Search, Filter, Download, Trash2, Loader2 } from "lucide-react";
+import { db } from "@/lib/firebase";
+import { collection, query, orderBy, onSnapshot, doc, updateDoc, deleteDoc } from "firebase/firestore";
 
 const statusColors = {
   New: "bg-blue-50 text-blue-700",
@@ -21,14 +15,65 @@ const statusColors = {
 };
 
 export default function LeadsPage() {
-  const [leads, setLeads] = useState(initialLeads);
+  const [leads, setLeads] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
 
-  const filtered = leads.filter((l) => l.name.toLowerCase().includes(search.toLowerCase()) || l.course.toLowerCase().includes(search.toLowerCase()));
+  useEffect(() => {
+    if (!db) {
+      setLoading(false);
+      return;
+    }
 
-  const updateStatus = (id, newStatus) => {
-    setLeads((prev) => prev.map((l) => (l.id === id ? { ...l, status: newStatus } : l)));
+    const q = query(collection(db, "leads"), orderBy("createdAt", "desc"));
+    
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const leadsData = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+        // Format date for display if it exists
+        date: doc.data().createdAt?.toDate ? 
+              doc.data().createdAt.toDate().toLocaleDateString("en-GB", { day: '2-digit', month: 'short', year: 'numeric' }) : 
+              "Just now"
+      }));
+      setLeads(leadsData);
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const filtered = leads.filter((l) => 
+    l.name?.toLowerCase().includes(search.toLowerCase()) || 
+    l.courseInterested?.toLowerCase().includes(search.toLowerCase()) ||
+    l.email?.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const updateStatus = async (id, newStatus) => {
+    try {
+      const leadRef = doc(db, "leads", id);
+      await updateDoc(leadRef, { status: newStatus });
+    } catch (err) {
+      console.error("Failed to update status", err);
+    }
   };
+
+  const handleDelete = async (id) => {
+    if (!confirm("Are you sure you want to delete this lead?")) return;
+    try {
+      await deleteDoc(doc(db, "leads", id));
+    } catch (err) {
+      console.error("Failed to delete lead", err);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -43,7 +88,7 @@ export default function LeadsPage() {
       <div className="flex gap-3">
         <div className="flex-1 flex items-center gap-2 rounded-xl bg-white border border-slate-200 px-4 py-2.5">
           <Search size={16} className="text-slate-400" />
-          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search leads..." className="flex-1 outline-none text-sm bg-transparent" />
+          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search leads by name, email or course..." className="flex-1 outline-none text-sm bg-transparent" />
         </div>
         <button className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-600 hover:bg-slate-50">
           <Filter size={16} /> Filter
@@ -56,50 +101,67 @@ export default function LeadsPage() {
           <table className="w-full">
             <thead>
               <tr className="bg-slate-50 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                <th className="px-6 py-3">Name</th>
-                <th className="px-6 py-3">Course</th>
-                <th className="px-6 py-3">Location</th>
+                <th className="px-6 py-3">Student Details</th>
+                <th className="px-6 py-3">Course / Location</th>
                 <th className="px-6 py-3">Date</th>
                 <th className="px-6 py-3">Status</th>
                 <th className="px-6 py-3">Actions</th>
               </tr>
             </thead>
             <tbody>
-              {filtered.map((lead, i) => (
-                <motion.tr
-                  key={lead.id}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: i * 0.03 }}
-                  className="border-t border-slate-50 hover:bg-slate-50/50"
-                >
-                  <td className="px-6 py-4">
-                    <div>
-                      <p className="font-semibold text-slate-900 text-sm">{lead.name}</p>
-                      <p className="text-xs text-slate-500">{lead.email}</p>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 text-sm text-slate-700">{lead.course}</td>
-                  <td className="px-6 py-4 text-sm text-slate-500">{lead.location}</td>
-                  <td className="px-6 py-4 text-xs text-slate-500">{lead.date}</td>
-                  <td className="px-6 py-4">
-                    <span className={`rounded-full px-3 py-1 text-xs font-semibold ${statusColors[lead.status]}`}>{lead.status}</span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <select
-                      value={lead.status}
-                      onChange={(e) => updateStatus(lead.id, e.target.value)}
-                      className="rounded-lg border border-slate-200 px-2 py-1 text-xs outline-none focus:border-primary"
-                    >
-                      <option value="New">New</option>
-                      <option value="Contacted">Contacted</option>
-                      <option value="Interested">Interested</option>
-                      <option value="Converted">Converted</option>
-                      <option value="Closed">Closed</option>
-                    </select>
-                  </td>
-                </motion.tr>
-              ))}
+              {filtered.length === 0 ? (
+                <tr>
+                  <td colSpan="5" className="px-6 py-10 text-center text-slate-500 italic">No leads found.</td>
+                </tr>
+              ) : (
+                filtered.map((lead, i) => (
+                  <motion.tr
+                    key={lead.id}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: i * 0.03 }}
+                    className="border-t border-slate-50 hover:bg-slate-50/50"
+                  >
+                    <td className="px-6 py-4">
+                      <div>
+                        <p className="font-semibold text-slate-900 text-sm">{lead.name}</p>
+                        <p className="text-xs text-slate-500">{lead.email}</p>
+                        <p className="text-xs text-slate-500">{lead.phone}</p>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <p className="text-sm text-slate-700 font-medium">{lead.courseInterested}</p>
+                      <p className="text-xs text-slate-500">{lead.preferredLocation || "Not specified"}</p>
+                    </td>
+                    <td className="px-6 py-4 text-xs text-slate-500">{lead.date}</td>
+                    <td className="px-6 py-4">
+                      <span className={`rounded-full px-3 py-1 text-xs font-semibold ${statusColors[lead.status] || "bg-slate-100"}`}>{lead.status}</span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-2">
+                        <select
+                          value={lead.status}
+                          onChange={(e) => updateStatus(lead.id, e.target.value)}
+                          className="rounded-lg border border-slate-200 px-2 py-1 text-xs outline-none focus:border-primary bg-white"
+                        >
+                          <option value="New">New</option>
+                          <option value="Contacted">Contacted</option>
+                          <option value="Interested">Interested</option>
+                          <option value="Converted">Converted</option>
+                          <option value="Closed">Closed</option>
+                        </select>
+                        <button 
+                          onClick={() => handleDelete(lead.id)}
+                          className="p-1.5 text-slate-400 hover:text-red-500 transition-colors"
+                          title="Delete Lead"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    </td>
+                  </motion.tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>

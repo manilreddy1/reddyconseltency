@@ -5,6 +5,9 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 
+import { db } from "@/lib/firebase";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+
 const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   phone: z.string().min(10, "Valid phone number required"),
@@ -30,18 +33,21 @@ export function LeadCaptureForm() {
   const onSubmit = async (data) => {
     setIsSubmitting(true);
     try {
-      const response = await fetch("/api/leads", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+      if (!db) {
+        throw new Error("Firebase DB not initialized");
+      }
+      
+      await addDoc(collection(db, "leads"), {
+        ...data,
+        status: "New",
+        createdAt: serverTimestamp(),
       });
 
-      if (response.ok) {
-        setSuccess(true);
-        reset();
-      }
+      setSuccess(true);
+      reset();
     } catch (error) {
       console.error("Submission failed", error);
+      alert("Submission failed. Please check your internet connection and try again.");
     } finally {
       setIsSubmitting(false);
     }
