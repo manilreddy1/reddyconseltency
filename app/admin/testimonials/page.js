@@ -16,6 +16,7 @@ export default function TestimonialsManagement() {
   useEffect(() => {
     async function fetchTestimonials() {
       try {
+        if (!db) return;
         const snap = await getDocs(collection(db, "testimonials"));
         setList(snap.docs.map(d => ({ id: d.id, ...d.data() })));
       } catch (err) {

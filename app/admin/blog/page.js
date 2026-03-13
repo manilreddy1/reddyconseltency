@@ -16,6 +16,7 @@ export default function BlogManagement() {
   useEffect(() => {
     async function fetchBlogs() {
       try {
+        if (!db) return;
         const snap = await getDocs(collection(db, "blogs"));
         setPosts(snap.docs.map(d => ({ slug: d.id, ...d.data() })));
       } catch (err) {

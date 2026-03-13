@@ -19,6 +19,7 @@ export default function CollegeDetailPage() {
     async function fetchCollege() {
       if (!slug) return;
       try {
+        if (!db) return;
         const docSnap = await getDoc(doc(db, "colleges", slug));
         if (docSnap.exists()) {
           setCollege({ slug: docSnap.id, ...docSnap.data() });

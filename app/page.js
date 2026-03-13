@@ -23,6 +23,10 @@ export default function HomePage() {
   useEffect(() => {
     async function fetchData() {
       try {
+        if (!db) {
+          console.warn("Firebase DB not initialized. Missing environment variables?");
+          return;
+        }
         const statsSnap = await getDocs(collection(db, "stats"));
         const servicesSnap = await getDocs(collection(db, "services"));
         const coursesSnap = await getDocs(query(collection(db, "courses"), limit(4)));

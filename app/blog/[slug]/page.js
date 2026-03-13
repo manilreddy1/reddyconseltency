@@ -19,6 +19,7 @@ export default function BlogPostPage() {
     async function fetchPost() {
       if (!slug) return;
       try {
+        if (!db) return;
         const docSnap = await getDoc(doc(db, "blogs", slug));
         if (docSnap.exists()) {
           setPost({ slug: docSnap.id, ...docSnap.data() });

@@ -19,6 +19,7 @@ export default function CourseDetailPage() {
     async function fetchCourse() {
       if (!slug) return;
       try {
+        if (!db) return;
         const docSnap = await getDoc(doc(db, "courses", slug));
         if (docSnap.exists()) {
           setCourse({ slug: docSnap.id, ...docSnap.data() });

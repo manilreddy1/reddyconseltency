@@ -16,6 +16,7 @@ export default function CoursesManagement() {
   useEffect(() => {
     async function fetchCourses() {
       try {
+        if (!db) return;
         const snap = await getDocs(collection(db, "courses"));
         setCourses(snap.docs.map(d => ({ slug: d.id, ...d.data() })));
       } catch (err) {

@@ -21,6 +21,12 @@ export default function LoginPage() {
     setLoading(true);
     setError("");
 
+    if (!auth || !db) {
+      setError("Firebase not configured. Please add NEXT_PUBLIC_FIREBASE_* environment variables to Vercel/Netlify.");
+      setLoading(false);
+      return;
+    }
+
     try {
       if (isRegister) {
         const userCredential = await createUserWithEmailAndPassword(auth, form.email, form.password);

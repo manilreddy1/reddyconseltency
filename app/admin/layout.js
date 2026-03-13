@@ -21,7 +21,9 @@ const sidebarLinks = [
 function Sidebar({ pathname, onClose }) {
   const handleSignOut = async () => {
     try {
-      await signOut(auth);
+      if (auth) {
+        await signOut(auth);
+      }
       document.cookie = "admin_session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
       window.location.href = "/login";
     } catch (error) {

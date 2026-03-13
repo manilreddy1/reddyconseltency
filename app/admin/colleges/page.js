@@ -16,6 +16,7 @@ export default function CollegesManagement() {
   useEffect(() => {
     async function fetchColleges() {
       try {
+        if (!db) return;
         const snap = await getDocs(collection(db, "colleges"));
         setColleges(snap.docs.map(d => ({ slug: d.id, ...d.data() })));
       } catch (err) {

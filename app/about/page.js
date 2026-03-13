@@ -16,6 +16,7 @@ export default function AboutPage() {
   useEffect(() => {
     async function fetchStats() {
       try {
+        if (!db) return;
         const snap = await getDocs(collection(db, "stats"));
         setStats(snap.docs.map(d => d.data()));
       } catch (err) {
