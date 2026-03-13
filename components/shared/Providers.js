@@ -14,18 +14,33 @@ export function Providers({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!auth) {
+      setLoading(false);
+      return;
+    }
+
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
         try {
-          const userDoc = await getDoc(doc(db, "users", firebaseUser.uid));
-          const userData = userDoc.exists() ? userDoc.data() : { role: "STUDENT", name: firebaseUser.email.split("@")[0] };
-          
-          setUser({
-            id: firebaseUser.uid,
-            email: firebaseUser.email,
-            name: userData.name,
-            role: userData.role,
-          });
+          // Only fetch if db exists
+          if (db) {
+            const userDoc = await getDoc(doc(db, "users", firebaseUser.uid));
+            const userData = userDoc.exists() ? userDoc.data() : { role: "STUDENT", name: firebaseUser.email.split("@")[0] };
+            
+            setUser({
+              id: firebaseUser.uid,
+              email: firebaseUser.email,
+              name: userData.name,
+              role: userData.role,
+            });
+          } else {
+            setUser({
+              id: firebaseUser.uid,
+              email: firebaseUser.email,
+              role: "STUDENT",
+              name: firebaseUser.email.split("@")[0],
+            });
+          }
         } catch (error) {
           console.error("Error fetching user data:", error);
           setUser({
