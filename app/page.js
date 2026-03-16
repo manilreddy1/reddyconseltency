@@ -78,9 +78,9 @@ export default function HomePage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
-                className="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-4 py-1.5 mb-6"
+                className="inline-flex items-center gap-2 rounded-full border border-secondary/20 bg-secondary/5 px-4 py-1.5 mb-6"
               >
-                <span className="text-sm font-semibold text-blue-700 uppercase tracking-wider">Admissions Open 2026</span>
+                <span className="text-sm font-semibold text-secondary uppercase tracking-wider">Admissions Open 2026</span>
               </motion.div>
 
               <motion.h1
@@ -89,7 +89,7 @@ export default function HomePage() {
                 transition={{ duration: 0.6, delay: 0.1 }}
                 className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight text-slate-900 mb-6"
               >
-                Your <span className="text-blue-600">Career Journey</span> Starts Here.
+                Your <span className="text-secondary">Career Journey</span> Starts Here.
               </motion.h1>
 
               <motion.p
@@ -107,7 +107,7 @@ export default function HomePage() {
                 transition={{ duration: 0.6, delay: 0.3 }}
                 className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4"
               >
-                <Link href="/contact" className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-8 py-4 text-base font-semibold text-white transition-all hover:bg-blue-700 shadow-md shadow-blue-600/20">
+                <Link href="/contact" className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-lg bg-primary px-8 py-4 text-base font-semibold text-white transition-all hover:bg-primary/90 shadow-md shadow-primary/20">
                   Talk to a Counselor
                   <ArrowRight size={18} />
                 </Link>
@@ -156,8 +156,8 @@ export default function HomePage() {
                 
                 {/* Simple Overlay Badge */}
                 <div className="absolute bottom-6 left-6 bg-white/95 backdrop-blur px-6 py-4 rounded-xl shadow-lg border border-slate-100 flex items-center gap-4">
-                  <div className="h-12 w-12 rounded-full bg-blue-50 flex items-center justify-center">
-                     <GraduationCap size={24} className="text-blue-600" />
+                  <div className="h-12 w-12 rounded-full bg-secondary/10 flex items-center justify-center">
+                     <GraduationCap size={24} className="text-secondary" />
                   </div>
                   <div>
                     <p className="text-sm font-bold text-slate-900">Expert Guidance</p>

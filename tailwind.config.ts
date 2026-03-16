@@ -5,8 +5,9 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        primary: '#1E3A8A',
-        secondary: '#F59E0B',
+        primary: '#1E2B4B',
+        secondary: '#B11116',
+        gold: '#D4AF37',
         surface: '#F8FAFC',
         ink: '#0F172A'
       },
