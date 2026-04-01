@@ -32,12 +32,12 @@ export function Navbar() {
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 shrink-0">
           <img
-            src="/images/logo.png"
-            alt="Reddy Consultancy"
+            src="/images/mainlogo.jpeg"
+            alt="RK Tech Consultancy"
             className="w-9 h-9 rounded-full object-contain"
           />
           <span className="font-bold text-slate-900 text-base sm:text-lg">
-            Reddy Consultancy
+            RK Tech Consultancy
           </span>
         </Link>
 
