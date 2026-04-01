@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -31,9 +32,11 @@ export function Navbar() {
 
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 shrink-0">
-          <img
+          <Image
             src="/images/mainlogo.jpeg"
             alt="RK Tech Consultancy"
+            width={36}
+            height={36}
             className="w-9 h-9 rounded-full object-contain"
           />
           <span className="font-bold text-slate-900 text-base sm:text-lg">

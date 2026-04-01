@@ -56,7 +56,7 @@ export default function ServicesPage() {
             transition={{ delay: 0.1 }}
             className="mt-6 mx-auto max-w-2xl text-lg text-blue-100"
           >
-            Comprehensive consulting solutions tailored to secure your place at the world's most prestigious institutions.
+            Comprehensive consulting solutions tailored to secure your place at the world&apos;s most prestigious institutions.
           </motion.p>
         </div>
       </div>

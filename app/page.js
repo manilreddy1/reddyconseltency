@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Navbar } from "@/components/shared/Navbar";
 import { Footer } from "@/components/shared/Footer";
 import { db } from "@/lib/firebase";
@@ -143,14 +144,11 @@ export default function HomePage() {
               >
                 {/* Fallback pattern in case image is missing, but meant to look like a photo container */}
                 <div className="absolute inset-0 bg-slate-100 flex items-center justify-center">
-                   <img 
+                   <Image 
                     src="/images/counseling-session.png" 
                     alt="Students in a counseling session" 
+                    fill
                     className="object-cover w-full h-full"
-                    onError={(e) => {
-                      e.target.style.display = 'none';
-                      e.target.parentElement.innerHTML = '<div class="text-center p-8"><span class="block mb-2 text-slate-400">Photo: Students working with counselor</span><div class="w-full h-full min-h-[300px] bg-slate-200 rounded-xl"></div></div>';
-                    }}
                    />
                 </div>
                 
